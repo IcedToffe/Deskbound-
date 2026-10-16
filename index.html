@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="theme-color" content="#7C5CFF">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deskbound</title>
+<meta name="description" content="A desk-break timer that guides you through one-minute animated stretches. Private, offline-friendly, no sign-up.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%A7%98%3C/text%3E%3C/svg%3E">
+<script>try{var s=JSON.parse(localStorage.getItem('deskbound-v1')||'{}').settings||{};document.documentElement.dataset.theme=s.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){}</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen">
+<div id="glow" aria-hidden="true"></div>
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+  <header class="mb-6 flex items-start justify-between gap-4">
+    <div>
+      <h1 class="disp text-5xl font-extrabold">Deskbound</h1>
+      <p class="mt-1 text-lg">Study long. Move every so often. One minute, one stretch.</p>
+    </div>
+    <div class="flex flex-wrap justify-end gap-2 shrink-0">
+      <button id="install" class="btn soft hidden">Install app</button>
+      <select id="lang" aria-label="Language"><option value="en">English</option><option value="fil">Filipino</option></select>
+      <button id="theme" class="btn soft">Dark mode</button>
+    </div>
+  </header>
+
+  <div id="warn" class="hidden mb-6"><div class="panel p-4 flex flex-wrap items-center gap-3" role="alert" style="border-color:var(--mint)">
+    <p id="warn-t" class="font-semibold flex-1">You've been sitting for a long time. Stand up and move!</p>
+    <button id="warn-go" class="btn">Stretch now</button><button id="warn-x" class="btn soft">Dismiss</button></div></div>
+
+  <div class="grid md:grid-cols-5 gap-6">
+
+    <!-- Main panel -->
+    <section class="panel p-6 md:col-span-3" aria-live="polite">
+
+      <div id="work-panel">
+        <div class="relative w-64 h-64 mx-auto">
+          <svg viewBox="0 0 120 120" class="w-full h-full -rotate-90" aria-hidden="true">
+            <circle cx="60" cy="60" r="54" fill="none" stroke="var(--soft)" stroke-width="8"/>
+            <circle id="ring" cx="60" cy="60" r="54" fill="none" stroke="var(--vio)" stroke-width="8" stroke-linecap="round" stroke-dasharray="339.3" stroke-dashoffset="339.3"/>
+          </svg>
+          <div class="absolute inset-0 grid place-items-center text-center">
+            <div>
+              <div id="time" class="disp text-6xl font-extrabold">25:00</div>
+              <div id="state" class="text-sm mt-1">Ready when you are</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-3 mt-6">
+          <button id="start" class="btn">Start session</button>
+          <button id="pause" class="btn soft hidden">Pause</button>
+          <button id="stop" class="btn soft hidden">End session</button>
+          <button id="try" class="btn soft">Try a stretch now</button>
+          <button id="pop" class="btn soft">Pop out timer</button>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-3 mt-6 text-sm">
+          <label class="flex flex-col gap-1 font-semibold">Stretch every
+            <select id="mins">
+              <option value="0.1667">10 seconds (demo)</option>
+              <option value="20">20 minutes</option>
+              <option value="25">25 minutes</option>
+              <option value="30">30 minutes</option>
+              <option value="45">45 minutes</option>
+              <option value="60">60 minutes</option>
+            </select>
+          </label>
+          <label class="flex flex-col gap-1 font-semibold">Stretch set
+            <select id="focus">
+              <option value="routine">My routine</option>
+              <option value="eyes">Tired eyes (eyes and neck only)</option>
+            </select>
+          </label>
+          <label class="flex flex-col gap-1 font-semibold">Break length
+            <select id="blen"><option value="30">30 seconds</option><option value="60">1 minute</option><option value="120">2 minutes</option><option value="180">3 minutes</option></select>
+          </label>
+          <label class="flex flex-col gap-1 font-semibold">Daily goal
+            <select id="goal"><option value="3">3 stretches</option><option value="5">5 stretches</option><option value="8">8 stretches</option><option value="12">12 stretches</option></select>
+          </label>
+          <label class="flex flex-col gap-1 font-semibold">Sitting alert
+            <select id="sitwarn"><option value="60">After 60 min</option><option value="90">After 90 min</option><option value="120">After 120 min</option><option value="0">Off</option></select>
+          </label>
+          <label class="flex items-center gap-2 font-semibold"><input id="sound" type="checkbox" class="w-5 h-5"> Chime</label>
+          <label class="flex items-center gap-2 font-semibold"><input id="notify" type="checkbox" class="w-5 h-5"> Notifications</label>
+        </div>
+      </div>
+
+      <div id="break-panel" class="hidden text-center">
+        <p class="font-semibold" style="color:var(--mint)">Time to move</p>
+        <h2 id="s-name" class="disp text-4xl font-extrabold mt-1">Neck tilt</h2>
+        <div class="relative w-64 h-64 mx-auto my-2 grid place-items-center"><div class="breath" aria-hidden="true"></div><div id="fig-wrap" class="relative"></div></div>
+        <p id="s-tip" class="max-w-sm mx-auto"></p>
+        <p id="breath-label" class="font-semibold mt-2" style="color:var(--mint)">Breathe in</p>
+        <div id="b-time" class="disp text-5xl font-extrabold mt-3">1:00</div>
+        <div class="h-2 rounded-full mt-3 max-w-xs mx-auto overflow-hidden" style="background:var(--soft)"><i id="b-bar" class="block h-full" style="background:var(--mint);width:0"></i></div>
+        <div class="flex flex-wrap justify-center gap-3 mt-5">
+          <button id="done" class="btn">I did it</button>
+          <button id="snooze" class="btn soft">Snooze 5 min</button>
+          <button id="skip" class="btn soft">Skip this one</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Side column -->
+    <aside class="md:col-span-2 grid gap-6 content-start">
+      <section class="panel p-5">
+        <h2 class="font-bold text-lg mb-3">Today</h2>
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div><div id="n-done" class="disp text-3xl font-extrabold">0</div><div class="text-xs">stretches done</div></div>
+          <div><div id="n-skip" class="disp text-3xl font-extrabold">0</div><div class="text-xs">skipped</div></div>
+          <div><div id="n-sit" class="disp text-3xl font-extrabold">0m</div><div class="text-xs">at your desk</div></div>
+        </div>
+        <div class="mt-4"><div class="flex justify-between text-xs font-semibold"><span>Daily goal</span><span id="goal-txt">0 / 5</span></div>
+          <div class="h-2 rounded-full mt-1 overflow-hidden" style="background:var(--soft)"><i id="goal-bar" class="block h-full" style="background:var(--mint);width:0;transition:width .4s"></i></div></div>
+        <div id="dots" class="flex flex-wrap gap-1.5 mt-4" aria-label="Today's breaks"></div>
+        <p class="mt-3 text-sm font-semibold">Streak: <span id="streak">0 days</span></p>
+        <div id="week" class="flex items-end gap-2 h-20 mt-2" aria-label="Stretches done in the last 7 days"></div>
+        <button id="recap-btn" class="btn soft mt-4 w-full">Weekly recap</button>
+      </section>
+
+      <section class="panel p-5">
+        <h2 class="font-bold text-lg mb-2">Posture check</h2>
+        <ul class="text-sm grid gap-1 list-disc pl-5">
+          <li>Feet flat on the floor</li>
+          <li>Screen top at eye level</li>
+          <li>Elbows near 90 degrees</li>
+          <li>Shoulders loose, jaw unclenched</li>
+        </ul>
+      </section>
+      <section class="panel p-5">
+        <h2 class="font-bold text-lg mb-2">Your data</h2>
+        <p class="text-sm mb-3">Everything stays in this browser. Back it up or move it to another device.</p>
+        <div class="flex flex-wrap gap-2">
+          <button id="exp" class="btn soft">Export</button>
+          <button id="imp" class="btn soft">Import</button>
+          <button id="reset" class="btn soft">Reset</button>
+        </div>
+        <input id="impfile" type="file" accept="application/json" class="hidden">
+      </section>
+    </aside>
+  </div>
+
+  <section class="mt-8" aria-labelledby="lib-h">
+    <h2 id="lib-h" class="disp text-3xl font-extrabold">Stretch library</h2>
+    <p class="mt-1 mb-4">Tick the stretches you want in your routine. Hover a card to see the move. If you tick none, Deskbound uses them all.</p>
+    <div id="library" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    <h3 class="font-bold text-lg mt-8 mb-2">Add your own stretch</h3>
+    <form id="cform" class="panel p-4 grid gap-3 sm:grid-cols-[1fr_2fr_auto] items-center">
+      <input id="c-name" class="cin" data-ph="Name" placeholder="Name" maxlength="30" required>
+      <input id="c-tip" class="cin" data-ph="How to do it" placeholder="How to do it" maxlength="140" required>
+      <button class="btn">Add</button>
+    </form>
+  </section>
+
+  <dialog id="welcome">
+    <div data-step="0">
+      <h2 class="disp text-3xl font-extrabold">Welcome to Deskbound</h2>
+      <p class="mt-2">Work in focused blocks. When time is up, you get a one-minute stretch with a little guide to follow.</p>
+      <label class="flex flex-col gap-1 font-semibold mt-4">How often should we nudge you?
+        <select id="w-mins"><option value="20">Every 20 minutes</option><option value="25" selected>Every 25 minutes</option><option value="30">Every 30 minutes</option><option value="45">Every 45 minutes</option><option value="60">Every 60 minutes</option></select>
+      </label>
+    </div>
+    <div data-step="1" class="hidden">
+      <h2 class="disp text-3xl font-extrabold">Pick your alerts</h2>
+      <p class="mt-2">Choose how Deskbound gets your attention. You can change this any time.</p>
+      <label class="flex items-center gap-2 font-semibold mt-4"><input id="w-sound" type="checkbox" checked class="w-5 h-5"> Play a soft chime</label>
+      <label class="flex items-center gap-2 font-semibold mt-2"><input id="w-notify" type="checkbox" class="w-5 h-5"> Show desktop notifications</label>
+    </div>
+    <div data-step="2" class="hidden">
+      <h2 class="disp text-3xl font-extrabold">Try your first stretch</h2>
+      <p class="mt-2">Let's do a quick one now so you know what to expect. It takes about a minute and doesn't count toward your stats.</p>
+    </div>
+    <div class="flex justify-between gap-3 mt-6"><button id="w-skip" class="btn soft">Skip</button><button id="w-next" class="btn">Next</button></div>
+  </dialog>
+
+  <dialog id="recap">
+    <div id="recap-card"></div>
+    <div class="flex flex-wrap gap-2 mt-4">
+      <button id="recap-copy" class="btn soft">Copy text</button>
+      <button id="recap-img" class="btn">Download image</button>
+      <button class="btn soft" onclick="this.closest('dialog').close()">Close</button>
+    </div>
+  </dialog>
+
+  <footer class="mt-8 text-sm max-w-2xl">
+    Shortcuts: Space start/pause, Enter = "I did it", S = skip, D = dark mode. Tip: keep this tab open (pin it). The countdown shows in the tab title, so you can see it from other tabs.
+    Notifications work best when the page runs from a local server, like VS Code's Live Server.
+  </footer>
+</div>
+
+<script src="i18n.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
