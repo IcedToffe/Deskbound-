@@ -88,6 +88,13 @@
             <select id="sitwarn"><option value="60">After 60 min</option><option value="90">After 90 min</option><option value="120">After 120 min</option><option value="0">Off</option></select>
           </label>
           <label class="flex items-center gap-2 font-semibold"><input id="sound" type="checkbox" class="w-5 h-5"> Chime</label>
+          <div class="col-span-full flex flex-wrap items-center gap-2">
+            <span class="font-semibold">Alarm sound:</span> <span id="alarm-name" class="text-sm">Default chime</span>
+            <button id="alarm-pick" type="button" class="btn soft">Choose file</button>
+            <button id="alarm-test" type="button" class="btn soft">Test</button>
+            <button id="alarm-rm" type="button" class="btn soft hidden">Remove</button>
+            <input id="alarm-file" type="file" accept="audio/*" class="hidden">
+          </div>
           <label class="flex items-center gap-2 font-semibold"><input id="notify" type="checkbox" class="w-5 h-5"> Notifications</label>
         </div>
       </div>
