@@ -1,5 +1,5 @@
 // Offline support. Bump VERSION whenever you change any file, so users get the update.
-const VERSION = 'deskbound-v3';
+const VERSION = 'deskbound-v4';
 const CORE = ['./', 'index.html', 'style.css', 'app.js', 'i18n.js', 'manifest.json', 'icon.svg', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE)).then(() => self.skipWaiting())));
