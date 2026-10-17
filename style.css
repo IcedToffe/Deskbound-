@@ -1,0 +1,62 @@
+:root { --ink:#2B2350; --bg:#F4F1FB; --vio:#7C5CFF; --mint:#1FB894; --soft:#E4DDFA; --mute:#C9BEF2; --card:#fff; --btn:#fff; }
+  :root[data-theme=dark] { --ink:#EDE9FF; --bg:#15122B; --card:#1F1A3D; --vio:#9B84FF; --mint:#3DD9B3; --soft:#342D63; --mute:#4A4182; --btn:#15122B; color-scheme:dark; }
+  body { font-family:'Figtree',system-ui,sans-serif; background:var(--bg); color:var(--ink); }
+  .disp { font-family:'Fraunces',Georgia,serif; }
+  .panel { background:var(--card); border:1.5px solid var(--soft); border-radius:24px; }
+  .btn { border-radius:999px; padding:.65rem 1.4rem; font-weight:700; background:var(--vio); color:var(--btn); }
+  .btn:hover { filter:brightness(.92); }
+  .btn.soft { background:var(--soft); color:var(--ink); }
+  .btn.soft:hover { background:var(--mute); }
+  select { border:1.5px solid var(--soft); border-radius:12px; padding:.4rem .6rem; background:var(--card); color:var(--ink); }
+  :focus-visible { outline:3px solid var(--vio); outline-offset:2px; }
+
+  /* Stretch figure */
+  .fig line, .fig circle { stroke:var(--ink); stroke-width:7; stroke-linecap:round; fill:none; }
+  .fig .head circle { fill:var(--soft); }
+  .fig .torso { stroke-width:18; stroke:var(--vio); }
+  .fig .furniture line, .fig .furniture rect { stroke:var(--mute); fill:var(--mute); }
+  .fig * { transform-box:view-box; }
+  .fig .armL { transform-origin:84px 90px; } .fig .armR { transform-origin:116px 90px; }
+  .fig .head { transform-origin:100px 76px; } .fig .upper { transform-origin:100px 142px; }
+  .fig .far { opacity:0; } .fig .far circle { fill:var(--mint); stroke:none; } .fig .far line { stroke:var(--mint); stroke-width:3; stroke-dasharray:4 6; }
+  @keyframes neck { 0%,100%{transform:rotate(-24deg)} 50%{transform:rotate(24deg)} }
+  @keyframes shrug { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-9px)} }
+  @keyframes reachL { 0%,100%{transform:rotate(0)} 50%{transform:rotate(172deg)} }
+  @keyframes reachR { 0%,100%{transform:rotate(0)} 50%{transform:rotate(-172deg)} }
+  @keyframes openL { 0%,100%{transform:rotate(70deg)} 50%{transform:rotate(108deg)} }
+  @keyframes openR { 0%,100%{transform:rotate(-70deg)} 50%{transform:rotate(-108deg)} }
+  @keyframes bend { 0%,100%{transform:rotate(-14deg)} 50%{transform:rotate(14deg)} }
+  @keyframes stand { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-16px)} }
+  @keyframes pulse { 0%,100%{opacity:.25} 50%{opacity:1} }
+  .s-neck .head { animation:neck 3.2s ease-in-out infinite; }
+  .s-shrug .shoulders { animation:shrug 2.4s ease-in-out infinite; }
+  .s-reach .armL { animation:reachL 4s ease-in-out infinite; } .s-reach .armR { animation:reachR 4s ease-in-out infinite; }
+  .s-open .armL { animation:openL 3s ease-in-out infinite; } .s-open .armR { animation:openR 3s ease-in-out infinite; }
+  .s-bend .upper { animation:bend 4s ease-in-out infinite; }
+  .s-stand .body { animation:stand 3.5s ease-in-out infinite; }
+  .s-eyes .far { opacity:1; animation:pulse 2.5s ease-in-out infinite; }
+  @keyframes orbit { to { transform:rotate(360deg); } }
+  @keyframes tuck { 0%,100%{transform:translateY(0)} 50%{transform:translateY(7px) scale(.92)} }
+  @keyframes turn { 0%,100%{transform:translateX(-7px) scaleX(.78)} 50%{transform:translateX(7px) scaleX(.78)} }
+  .s-eyecircle .far { opacity:1; scale:.55; transform-origin:100px 58px; animation:orbit 6s linear infinite; }
+  .s-chin .head { animation:tuck 3s ease-in-out infinite; }
+  .s-neckturn .head { animation:turn 3.6s ease-in-out infinite; }
+  .lib .fig * { animation-play-state:paused; }
+  .lib:hover .fig *, .lib:focus-within .fig * { animation-play-state:running; }
+  #glow { position:fixed; inset:0; pointer-events:none; opacity:0; transition:opacity .8s; box-shadow:inset 0 0 160px 40px color-mix(in srgb, var(--mint) 45%, transparent); }
+  body.breaking #glow { opacity:1; }
+  .breath { position:absolute; inset:0; border-radius:50%; border:5px solid var(--mint); opacity:.55; animation:breathe 8s ease-in-out infinite; }
+  @keyframes breathe { 0%,100%{transform:scale(.82)} 50%{transform:scale(1)} }
+  .fig .torso { stroke:var(--outfit,var(--vio)); }
+  .fig .head .eye { fill:var(--ink); stroke:none; }
+  .fig .head .glass { fill:none; stroke-width:2; }
+  .fig .head .spark { fill:var(--mint); stroke:none; }
+  .fig .head path { fill:none; stroke:var(--ink); stroke-width:2.5; stroke-linecap:round; }
+  .dot { width:14px; height:14px; border-radius:50%; border:2px solid var(--vio); }
+  .dot.d { background:var(--mint); border-color:var(--mint); }
+  .dot.n { border-style:dashed; border-color:var(--mute); }
+  dialog { border:1.5px solid var(--soft); border-radius:24px; background:var(--card); color:var(--ink); padding:1.5rem; width:min(26rem, 92vw); }
+  dialog::backdrop { background:rgba(20,15,50,.55); }
+  @media (prefers-reduced-motion:reduce) { .fig * { animation-duration:14s !important; } .breath { animation:none; } }
+.s-custom .upper { animation:bend 4s ease-in-out infinite; }
+.cin { border:1.5px solid var(--soft); border-radius:12px; padding:.55rem .8rem; background:var(--card); color:var(--ink); min-width:0; }
