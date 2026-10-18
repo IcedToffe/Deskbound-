@@ -96,6 +96,31 @@ function chime(notes) {
     o.start(t); o.stop(t + 0.65);
   });
 }
+// ---- Custom alarm sound (kept in IndexedDB on this device, never uploaded) ----
+const kv = (mode, fn) => new Promise((res, rej) => {
+  const r = indexedDB.open('deskbound', 1);
+  r.onupgradeneeded = () => r.result.createObjectStore('kv');
+  r.onerror = () => rej(r.error);
+  r.onsuccess = () => { const tx = r.result.transaction('kv', mode), q = fn(tx.objectStore('kv')); tx.oncomplete = () => res(q.result); tx.onerror = () => rej(tx.error); };
+});
+let alarmURL = null, alarmName = '', alarmAudio = null, alarmTimer = 0;
+function showAlarm() { $('alarm-name').textContent = alarmName || t('Default chime'); $('alarm-rm').classList.toggle('hidden', !alarmURL); }
+async function loadAlarm() {
+  try {
+    const rec = await kv('readonly', s => s.get('alarm'));
+    if (alarmURL) URL.revokeObjectURL(alarmURL);
+    alarmURL = rec ? URL.createObjectURL(rec.blob) : null; alarmName = rec ? rec.name : '';
+  } catch {}
+  showAlarm();
+}
+function stopAlarm() { clearTimeout(alarmTimer); alarmAudio?.pause(); }
+function playAlarm() {
+  stopAlarm();
+  alarmAudio = new Audio(alarmURL); alarmAudio.volume = 0.9;
+  alarmAudio.play().catch(() => {});
+  alarmTimer = setTimeout(stopAlarm, 8000);   // never plays longer than 8 seconds
+}
+const alarm = notes => { if (!store.settings.sound) return; alarmURL ? playAlarm() : chime(notes); };
 async function askNotify() {
   if (!('Notification' in window)) return false;
   if (Notification.permission === 'default') await Notification.requestPermission();
@@ -129,11 +154,12 @@ function startBreak(demo = false) {
   $('s-name').textContent = sname(s);
   $('s-tip').textContent = stip(s);
   $('fig-wrap').innerHTML = figSvg(s.id, 'w-52 h-52', moodNow());
-  chime([659, 880]);
+  alarm([659, 880]);
   notify(sname(s) + ': ' + stip(s));
   save(); render();
 }
 function finishBreak(done) {
+  stopAlarm();
   if (done) resetSit();
   if (st.demo && st.resume) { const r = st.resume; st = { ...st, mode: 'work', demo: false, resume: null, total: r.total, endAt: Date.now() + r.left, workStart: Date.now(), paused: false }; render(); return; }
   if (!st.demo) { done ? day().done++ : day().skipped++; (day().log ||= []).push(done ? 'd' : 's'); }
@@ -407,8 +433,19 @@ $('library').onchange = e => {
   save();
 };
 
+$('alarm-pick').onclick = () => $('alarm-file').click();
+$('alarm-test').onclick = () => { initAudio(); alarmURL ? playAlarm() : chime([659, 880]); };
+$('alarm-rm').onclick = async () => { stopAlarm(); try { await kv('readwrite', s => s.delete('alarm')); } catch {} loadAlarm(); };
+$('alarm-file').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  if (!f.type.startsWith('audio/')) return alert('Please choose an audio file (mp3, wav, ogg, m4a).');
+  if (f.size > 3e6) return alert('That file is over 3 MB. Please pick a shorter clip.');
+  try { await kv('readwrite', s => s.put({ blob: f, name: f.name }, 'alarm')); await loadAlarm(); playAlarm(); }
+  catch { alert('Could not save the sound in this browser.'); }
+};
+loadAlarm();
 $('lang').value = lang;
-$('lang').onchange = e => { lang = e.target.value; store.settings.lang = lang; save(); applyTheme(document.documentElement.dataset.theme); renderLibrary(); render(); };
+$('lang').onchange = e => { lang = e.target.value; store.settings.lang = lang; save(); applyTheme(document.documentElement.dataset.theme); renderLibrary(); showAlarm(); render(); };
 $('sitwarn').value = String(store.settings.sitwarn);
 $('sitwarn').onchange = e => { store.settings.sitwarn = Number(e.target.value); save(); resetSit(); };
 $('warn-x').onclick = () => $('warn').classList.add('hidden');
@@ -424,7 +461,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) naviga
 setInterval(() => {
   const now = Date.now(); if (st.mode === 'work' && !st.paused) sinceMove += now - lastTick; lastTick = now;
   const lim = store.settings.sitwarn * 60000;
-  if (lim && !warned && sinceMove >= lim) { warned = true; $('warn').classList.remove('hidden'); chime([440, 392, 330]); notify(t("You've been sitting for a long time. Stand up and move!")); }
+  if (lim && !warned && sinceMove >= lim) { warned = true; $('warn').classList.remove('hidden'); alarm([440, 392, 330]); notify(t("You've been sitting for a long time. Stand up and move!")); }
   if (st.mode === 'work' && !st.paused && Date.now() >= st.endAt) startBreak();
   else if (st.mode === 'break' && Date.now() >= st.endAt) finishBreak(true);
   else render();
