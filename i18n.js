@@ -20,7 +20,7 @@ const FIL = {
 "Posture check":"Tsek ng postura","Feet flat on the floor":"Patag ang paa sa sahig","Screen top at eye level":"Itaas ng screen ay kapantay ng mata","Elbows near 90 degrees":"Siko malapit sa 90 degrees","Shoulders loose, jaw unclenched":"Relaks ang balikat, hindi mahigpit ang panga",
 "Your data":"Iyong data","Everything stays in this browser. Back it up or move it to another device.":"Nananatili ang lahat sa browser na ito. I-backup o ilipat sa ibang device.","Export":"I-export","Import":"I-import","Reset":"I-reset",
 "Stretch library":"Aklatan ng unat","Tick the stretches you want in your routine. Hover a card to see the move. If you tick none, Deskbound uses them all.":"Piliin ang mga unat para sa routine mo. I-hover ang card para makita ang galaw. Kung wala kang pipiliin, gagamitin ang lahat.",
-"Eyes and neck":"Mata at leeg","Add your own stretch":"Magdagdag ng sariling unat","Add":"Idagdag","Delete":"Burahin","Name":"Pangalan","How to do it":"Paano gawin"
+"Eyes and neck":"Mata at leeg","Add your own stretch":"Magdagdag ng sariling unat","Add":"Idagdag","Delete":"Burahin","Alarm sound:":"Tunog ng alarm:","Default chime":"Karaniwang tunog","Choose file":"Pumili ng file","Test":"Subukan","Remove":"Alisin","Name":"Pangalan","How to do it":"Paano gawin"
 };
 const FSTR = {
 neck:["Pagtagilid ng leeg","Ibaba ang kanang tainga papunta sa balikat, saka magpalit ng panig. Dahan-dahan lang."],
