@@ -143,6 +143,55 @@
   $('hc').onchange = e => setContrast(e.target.checked);
   if (S.contrast) setContrast(true);
 
+  // ---------- 6. Library: search and category filter ----------
+  const CAT = { neck: 'Neck', neckturn: 'Neck', chin: 'Neck', eyes: 'Eyes', eyecircle: 'Eyes', shrug: 'Shoulders', open: 'Shoulders', reach: 'Shoulders', bend: 'Back', stand: 'Legs' };
+  const CATS = ['All', 'Neck', 'Eyes', 'Shoulders', 'Back', 'Legs', 'Custom'];
+  let q = '', cat = 'All';
+  $('library').insertAdjacentHTML('beforebegin', `<div class="flex flex-wrap items-center gap-2 mb-4">
+    <input id="lib-q" class="cin" placeholder="Search stretches" aria-label="Search stretches">
+    <div id="lib-cats" class="flex flex-wrap gap-2">${CATS.map(c => `<button class="chip" data-c="${c}" aria-pressed="${c === 'All'}">${c}</button>`).join('')}</div></div>`);
+  function applyFilter() {
+    [...$('library').children].forEach(card => {
+      const id = card.querySelector('input')?.dataset.id || '', c = CAT[id] || 'Custom';
+      const ok = (cat === 'All' || c === cat) && card.textContent.toLowerCase().includes(q);
+      card.style.display = ok ? '' : 'none';
+    });
+  }
+  const origLib = renderLibrary;
+  renderLibrary = function () { origLib(); applyFilter(); };
+  $('lib-q').oninput = e => { q = e.target.value.trim().toLowerCase(); applyFilter(); };
+  $('lib-cats').onclick = e => {
+    if (!e.target.dataset.c) return; cat = e.target.dataset.c;
+    document.querySelectorAll('#lib-cats .chip').forEach(b => b.setAttribute('aria-pressed', b === e.target));
+    applyFilter();
+  };
+
+  // ---------- 7. Sound styles (replaces the default chime, custom uploads still win) ----------
+  const TONES = { soft: ['sine', .25, .6], bell: ['triangle', .32, 1.2], pluck: ['square', .07, .3] };
+  chime = function (notes) {
+    if (!S.sound || !ac) return;
+    const [type, vol, len] = TONES[S.tone] || TONES.soft, t0 = ac.currentTime;
+    notes.forEach((f, i) => {
+      const o = ac.createOscillator(), g = ac.createGain(), t = t0 + i * .22;
+      o.type = type; o.frequency.value = f; o.connect(g); g.connect(ac.destination);
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .03); g.gain.exponentialRampToValueAtTime(.001, t + len);
+      o.start(t); o.stop(t + len + .05);
+    });
+  };
+  $('hc').closest('label').insertAdjacentHTML('beforebegin', `<label class="flex flex-col gap-1 font-semibold text-sm mt-4">Chime style
+    <select id="tone"><option value="soft">Soft</option><option value="bell">Bell</option><option value="pluck">Pluck</option></select></label>`);
+  $('tone').value = S.tone || 'soft';
+  $('tone').onchange = e => { S.tone = e.target.value; save(); initAudio(); chime([659, 880]); };
+
+  // ---------- 8. Keyboard shortcuts dialog (press ?) ----------
+  document.body.insertAdjacentHTML('beforeend', `<dialog id="keys"><h2 class="disp text-2xl font-extrabold">Keyboard shortcuts</h2>
+    <ul class="mt-3 grid gap-1 text-sm"><li><b>Space</b> start or pause</li><li><b>Enter</b> I did it</li><li><b>S</b> skip this stretch</li><li><b>D</b> dark mode</li><li><b>?</b> this list</li></ul>
+    <button class="btn soft mt-4" onclick="this.closest('dialog').close()">Close</button></dialog>`);
+  document.addEventListener('keydown', e => {
+    if (e.key !== '?' || document.querySelector('dialog[open]') || /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
+    $('keys').showModal();
+  });
+
   // Award a badge when a custom stretch is added
   $('cform').addEventListener('submit', () => setTimeout(checkBadges, 0));
   checkBadges(true);
