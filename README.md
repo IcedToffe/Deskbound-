@@ -4,8 +4,6 @@
 
 Deskbound is a desk-break timer for students who sit for hours. Instead of a plain Pomodoro break, it gives you a one-minute guided stretch with a small animated figure to follow. It is private, works offline, and needs no sign-up.
 
-Designed and built by **Milo**, UI designer based in Davao, Philippines.
-
 > Add here: live demo link, a 30-second demo GIF, and a screenshot of the main screen.
 
 ---
