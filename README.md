@@ -91,5 +91,5 @@ manifest.json   install settings and icons
 
 ## Contact
 
-**Milo** · UI Designer · Davao, Philippines
-LinkedIn: _add link_ · Email: _add email_
+**Milo** 
+
