@@ -1,0 +1,31 @@
+/* Accent themes: light value, then a lighter dark-mode value */
+:root[data-accent=rose]{--vio:#D6336C}  :root[data-theme=dark][data-accent=rose]{--vio:#FF7AA8}
+:root[data-accent=ocean]{--vio:#2563EB} :root[data-theme=dark][data-accent=ocean]{--vio:#7AA7FF}
+:root[data-accent=forest]{--vio:#15803D} :root[data-theme=dark][data-accent=forest]{--vio:#4ADE80}
+
+/* High contrast mode */
+:root[data-contrast=high]{--ink:#000;--soft:#B7ADE6;--mute:#8E82CF}
+:root[data-contrast=high][data-theme=dark]{--ink:#fff;--soft:#5B52A3;--mute:#7C72C4}
+:root[data-contrast=high] .panel,:root[data-contrast=high] dialog{border-width:2.5px;border-color:var(--ink)}
+:root[data-contrast=high] .btn.soft{border:2px solid var(--ink)}
+
+/* Personalize panel */
+.chip{border-radius:999px;padding:.35rem .9rem;font-weight:700;font-size:.85rem;background:var(--soft);color:var(--ink)}
+.chip:hover,.chip[aria-pressed=true]{background:var(--vio);color:var(--btn)}
+.swatch{width:30px;height:30px;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 2px var(--soft)}
+.swatch[aria-pressed=true]{box-shadow:0 0 0 3px var(--ink)}
+
+/* Insights dialog */
+#insights{width:min(34rem,94vw);max-height:90vh;overflow:auto}
+.tile{background:var(--soft);border-radius:16px;padding:.75rem;text-align:center}
+.heat{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,14px);gap:3px;overflow-x:auto;padding-bottom:4px}
+.heat i{width:14px;height:14px;border-radius:4px;background:var(--soft)}
+.badge{display:flex;gap:.6rem;align-items:center;border:1.5px solid var(--soft);border-radius:16px;padding:.6rem}
+.badge svg{width:36px;height:36px;flex:none;padding:7px;border-radius:50%;background:var(--soft);stroke:var(--mute);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.badge.on svg{background:var(--vio);stroke:var(--btn)}
+.badge:not(.on){opacity:.65}
+
+/* Toast and confetti */
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,120px);transition:transform .4s;background:var(--card);color:var(--ink);border:1.5px solid var(--mint);border-radius:999px;padding:.7rem 1.3rem;font-weight:700;z-index:50}
+#toast.show{transform:translate(-50%,0)}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:60}
